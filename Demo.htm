@@ -1,0 +1,426 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    
+    <style type="text/css">
+        
+        table {
+            border-collapse: collapse;
+        }
+        table td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+        
+    </style>
+
+    <script src="jquery-1.8.3.min.js" type="text/javascript"></script>
+
+    <script src="json2.js" type="text/javascript"></script>
+
+    <script src="XYTable.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+
+        var Tree1 = { Text: "Tree 1" , Children: [{ Text: "Tree 1.1" , Children: [{ Text: "Tree 1.1.1" }] }] };
+        var Tree2 = { Text: "Tree 2" , Children: [{ Text: "Tree 2.1" , Children: [{ Text: "Tree 2.1.1" },{ Text: "Tree 2.1.2" }] }] };
+        var Tree3 = { Text: "Tree 3" , Children: [{ Text: "Tree 3.1" , Children: [{ Text: "Tree 3.1.1" }] },{ Text: "Tree 3.2" }] };
+        var Tree4 = { Text: "Tree 4" , Children: [{ Text: "Tree 4.1" , Children: [{ Text: "Tree 4.1.1" }] } , { Text: "Tree 4.2" , Children: [{ Text: "Tree 4.2.1" } , { Text: "Tree 4.2.2" }] }] };
+        var Tree5 = { Text: "Tree 5" , Children: [{ Text: "Tree 5.1" , Children: [{ Text: "Tree 5.1.1" },{ Text: "Tree 5.1.2" }] },{ Text: "Tree 5.2" , Children: [{ Text: "Tree 5.2.1" },{ Text: "Tree 5.2.2" }] }] };
+        var Tree6 = { Text: "Tree 6" , Children: [{ Text: "Tree 6.1" , Children: [{ Text: "Tree 6.1.1" },{ Text: "Tree 6.1.2" },{ Text: "Tree 6.1.3" },{ Text: "Tree 6.1.4" },{ Text: "Tree 6.1.5" },{ Text: "Tree 6.1.6" },{ Text: "Tree 6.1.7" },{ Text: "Tree 6.1.8" }] },{ Text: "Tree 6.2" , Children: [{ Text: "Tree 6.2.1" } , { Text: "Tree 6.2.2" }]}] };
+        var Tree7 = { Text: "Tree 7" , Children: [{ Text: "Tree 7.1" , Children: [{ Text: "Tree 7.1.1", Children: [{ Text: "Tree 7.1.1.1" },{ Text: "Tree 7.1.1.2" }] }] }] };
+        var Tree8 = { Text: "Tree 8" };
+
+        $(function()
+            {
+                $("#cb_TitleNo").click(function()
+                    {
+                        $("#td_OneTitleInfo").hide();
+                        $("#tr_MoreTitleInfo").hide();
+                        $("#txt_OneTitle").val("");
+                        $("#txt_MoreTitle").val("");
+                    });
+                
+                //===
+
+                $("#cb_OneTitle").click(function()
+                    {
+                        $("#td_OneTitleInfo").show();
+                        $("#tr_MoreTitleInfo").hide();
+                        $("#txt_MoreTitle").val("");
+                    });
+                
+                //===
+
+                $("#cb_MoreTitle").click(function()
+                    {
+                        $("#tr_MoreTitleInfo").show();
+                        $("#td_OneTitleInfo").hide();
+                        $("#txt_OneTitle").val("");
+
+                    });
+
+                $("#btn_PickMoreTitle").click(function()
+                    {
+                        var tr = document.createElement("tr");
+
+                        var td_Text = document.createElement("td");
+                        tr.appendChild(td_Text);
+                        td_Text.innerHTML = $("#txt_MoreTitle").val();
+                        $("#txt_MoreTitle").val("");
+
+                        var td_Del = document.createElement("td");
+                        tr.appendChild(td_Del);
+
+                        var input_Del = document.createElement("input");
+                        td_Del.appendChild(input_Del);
+                        input_Del.setAttribute("type" , "button");
+                        input_Del.setAttribute("value" , "X");
+
+                        $(input_Del).click(function()
+                            {
+                                $(this).parent().parent().remove();
+                            });
+
+                        $("#table_MoreTitle").append(tr);
+
+                    });
+
+                $("#btn_XaxisTree").click(function()
+                    {
+                        var tr = document.createElement("tr");
+
+                        var td_Text = document.createElement("td");
+                        tr.appendChild(td_Text);
+                        td_Text.innerHTML = $("#select_XTree").val();
+
+                        var td_Del = document.createElement("td");
+                        tr.appendChild(td_Del);
+
+                        var input_Del = document.createElement("input");
+                        td_Del.appendChild(input_Del);
+                        input_Del.setAttribute("type" , "button");
+                        input_Del.setAttribute("value" , "X");
+
+                        $(input_Del).click(function()
+                            {
+                                $(this).parent().parent().remove();
+                            });
+
+                        $("#table_Xaxis").append(tr);                        
+                    });
+                
+                $("#btn_YaxisTree").click(function()
+                    {
+                        var tr = document.createElement("tr");
+
+                        var td_Text = document.createElement("td");
+                        tr.appendChild(td_Text);
+                        td_Text.innerHTML = $("#select_YTree").val();
+
+                        var td_Del = document.createElement("td");
+                        tr.appendChild(td_Del);
+
+                        var input_Del = document.createElement("input");
+                        td_Del.appendChild(input_Del);
+                        input_Del.setAttribute("type" , "button");
+                        input_Del.setAttribute("value" , "X");
+
+                        $(input_Del).click(function()
+                            {
+                                $(this).parent().parent().remove();
+                            });
+
+                        $("#table_Yaxis").append(tr);                        
+                    });
+
+                $("#btn_Submit").click(function()
+                    {
+                        var X_Trs = document.getElementById("table_Xaxis").getElementsByTagName("tr");
+
+                        if(X_Trs.length == 0)
+                            {
+                                alert("Must X axis ! ");
+                                return false;
+                            }
+
+                        var X = new Array();
+
+                        for(var i = 0 , m = X_Trs.length ; i < m ; i++)
+                            {
+                                var tr = X_Trs[i];
+
+                                var Tree = $(tr).find(" td:first").html();
+
+                                switch(Tree)
+                                    {
+                                        case "Tree1":
+                                            X.push(Tree1);
+                                            break;
+                                        case "Tree2":
+                                            X.push(Tree2);
+                                            break;
+                                        case "Tree3":
+                                            X.push(Tree3);
+                                            break;
+                                        case "Tree4":
+                                            X.push(Tree4);
+                                            break;
+                                        case "Tree5":
+                                            X.push(Tree5);
+                                            break;
+                                        case "Tree6":
+                                            X.push(Tree6);
+                                            break;
+                                        case "Tree7":
+                                            X.push(Tree7);
+                                            break;
+                                        case "Tree8":
+                                            X.push(Tree8);
+                                            break;
+                                        case "Tree9":
+                                            X.push(Tree9);
+                                            break;
+                                        case "Tree10":
+                                            X.push(Tree10);
+                                            break;
+                                        default:
+                                    }
+                            }
+
+                        var Y_Trs = document.getElementById("table_Yaxis").getElementsByTagName("tr");
+
+                        if(Y_Trs.length == 0)
+                            {
+                                alert("Must X axis ! ");
+                                return false;
+                            }
+
+                        var Y = new Array();
+
+                        for(var i = 0 , m = Y_Trs.length ; i < m ; i++)
+                            {
+                                var tr = Y_Trs[i];
+
+                                var Tree = $(tr).find(" td:first").html();
+
+                                switch(Tree)
+                                    {
+                                        case "Tree1":
+                                            Y.push(Tree1);
+                                            break;
+                                        case "Tree2":
+                                            Y.push(Tree2);
+                                            break;
+                                        case "Tree3":
+                                            Y.push(Tree3);
+                                            break;
+                                        case "Tree4":
+                                            Y.push(Tree4);
+                                            break;
+                                        case "Tree5":
+                                            Y.push(Tree5);
+                                            break;
+                                        case "Tree6":
+                                            Y.push(Tree6);
+                                            break;
+                                        case "Tree7":
+                                            Y.push(Tree7);
+                                            break;
+                                        case "Tree8":
+                                            Y.push(Tree8);
+                                            break;
+                                        case "Tree9":
+                                            Y.push(Tree9);
+                                            break;
+                                        case "Tree10":
+                                            Y.push(Tree10);
+                                            break;
+                                        default:
+                                    }
+                            }
+
+                        $("#div_DemoView").show();
+
+                        if(document.getElementById("cb_OneTitle").checked)
+                            {
+                                $("#div_XYTable").html("");
+                                $("#div_XYTable").DynamicXYTable({ X: X , Y: Y , Title: $("#txt_OneTitle").val() });
+                            }
+                        else if(document.getElementById("cb_MoreTitle").checked)
+                            {
+                                var Title_Trs = document.getElementById("table_MoreTitle").getElementsByTagName("tr");
+
+                                var Titles = new Array();
+
+                                for(var i = 0 , m = Title_Trs.length ; i < m ; i++)
+                                    {
+                                        var tr = Title_Trs[i];
+
+                                        var Title = $(tr).find(" td:first").html();
+
+                                        if(Title)
+                                            {
+                                                Titles.push(Title);
+                                            }
+                                    }
+                                $("#div_XYTable").html("");
+
+                                $("#div_XYTable").DynamicXYTable({ X: X , Y: Y , Title: Titles });
+
+                            }
+                        else
+                            {
+                                $("#div_XYTable").html("");
+                                $("#div_XYTable").DynamicXYTable({ X: X , Y: Y });
+                            }
+
+                        $("#table_Yaxis").html("");
+                        $("#table_Xaxis").html("");
+                        $("#table_MoreTitle").html("");
+                        $("#txt_OneTitle").val("");
+                        $("#td_OneTitleInfo").hide();
+                        $("#tr_MoreTitleInfo").hide();
+                        $("#txt_OneTitle").val("");
+                        $("#txt_MoreTitle").val("");
+                        $("#cb_TitleNo")[0].checked = false;
+                        $("#cb_MoreTitle")[0].checked = false;
+                        $("#cb_OneTitle")[0].checked = false;
+
+                    });
+            });
+
+    </script>
+    
+</head>
+    <body>
+        <h1>
+            Dynamic X-axis and Y-axis Title Table
+        </h1>
+        <h4>
+            This is a 'TreeView Table plug-ins.' based on jQuery. 
+        </h4>
+    
+        <table>
+            <tr>
+                <td colspan="2">
+                    Table Setting
+                </td>
+            </tr>
+        
+            <tr style="display: none;">
+                <td>
+                    Title
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td style="border-width: 0px;text-align: left;">
+                                <input type="radio" id="cb_TitleNo" name="Title"/>
+                            </td>
+                            <td style="border-width: 0px;text-align: left;">
+                                No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-width: 0px;text-align: left;">
+                                <input type="radio" id="cb_OneTitle" name="Title"/>
+                            </td>
+                            <td style="border-width: 0px;text-align: left;">
+                                One Title
+                            </td>
+                        </tr>
+                        <tr id="td_OneTitleInfo" style="display: none;">
+                            <td style="border-width: 0px;text-align: left;"></td>
+                            <td style="border-width: 0px;text-align: left;">
+                                <input type="text" id="txt_OneTitle"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-width: 0px;text-align: left;">
+                                <input type="radio" id="cb_MoreTitle" name="Title"/>
+                            </td>
+                            <td style="border-width: 0px;text-align: left;">
+                                More Title
+                            </td>
+                        </tr>  
+                        <tr id="tr_MoreTitleInfo" style="display: none;">
+                            <td style="border-width: 0px;text-align: left;"></td>
+                            <td style="border-width: 0px;text-align: left;">
+                                <input type="text" id="txt_MoreTitle"/>
+                                <input type="button" id="btn_PickMoreTitle" value="Pick" style="margin-left: 5px;"/>
+                                <div>
+                                    <table id="table_MoreTitle">
+                                    
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>                                                          
+                    </table>
+                </td>                        
+            </tr>
+        
+            <tr>
+                <td>
+                    X-axis 
+                    ( Setting X-axis Title )
+                </td>
+                <td>
+                    <select id="select_XTree">
+                        <option value="Tree1">Tree 1</option>
+                        <option value="Tree2">Tree 2</option>
+                        <option value="Tree3">Tree 3</option>
+                        <option value="Tree4">Tree 4</option>                    
+                    </select>
+                    <input type="button" value="Pick" id="btn_XaxisTree" />
+                    <div>
+                        <table id="table_Xaxis">
+                        
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        
+            <tr>
+                <td>
+                    Y-axis ( Setting Y-axis Title )
+                </td>
+                <td>
+                    <select id="select_YTree">
+                        <option value="Tree5">Tree 5</option>
+                        <option value="Tree6">Tree 6</option>
+                        <option value="Tree7">Tree 7</option>
+                        <option value="Tree8">Tree 8</option>
+                    </select>
+                    <input type="button" value="Pick" id="btn_YaxisTree" />
+                    <div>
+                        <table id="table_Yaxis">
+                        
+                        </table>
+                    </div>
+                </td>            
+            </tr>
+        
+            <tr>
+                <td colspan="2">
+                    <input type="button" value="Submit" id="btn_Submit"/>
+                </td>            
+            </tr>
+        
+        </table>
+    
+        <br/>
+    
+        <div style="display: none;" id="div_DemoView">
+            DEMO View
+        </div>
+    
+        <div id="div_XYTable">
+        
+        </div>
+
+    </body>
+</html>
