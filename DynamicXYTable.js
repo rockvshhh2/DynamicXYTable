@@ -34,23 +34,42 @@
 
                         var Colspan = 0;
 
-                        if(First.Children)
-                            {
-                                for(var j = 0 ; j < First.Children.length ; j++)
-                                    {
-                                        Colspan += Create_Y(First.Children[j] , Y_Trs , 1 , Y_LevelCount);
-                                    }
+                        if (First.Children) {
+                            for (var j = 0 ; j < First.Children.length ; j++) {
+                                Colspan += Create_Y(First.Children[j], Y_Trs, 1, Y_LevelCount);
                             }
 
-                        var span_Text = document.createElement("span");
-                        span_Text.innerHTML = First.Text;
+                            var span_Text = document.createElement("span");
+                            span_Text.innerHTML = First.Text;
 
-                        var td = document.createElement("td");
-                        td.appendChild(span_Text);
-                        td.setAttribute("colspan" , Colspan);
-                        Y_Trs[0].appendChild(td);
+                            var td = document.createElement("td");
+                            td.appendChild(span_Text);
+                            td.setAttribute("colspan", Colspan);
+                            Y_Trs[0].appendChild(td);
 
-                        First.Colspan = Colspan;
+                            First.Colspan = Colspan;
+                        }
+                        else {
+
+                            var span_Text = document.createElement("span");
+                            span_Text.innerHTML = First.Text;
+
+                            var td = document.createElement("td");
+                            td.appendChild(span_Text);
+                            td.setAttribute("colspan", Colspan);
+                            Y_Trs[0].appendChild(td);
+
+                            First.Colspan = Colspan;
+
+                            if (Y_LevelCount > 1) {
+                                for (var j = 1 ; j < Y_LevelCount ; j++) {
+
+                                    var td = document.createElement("td");
+                                    td.setAttribute("colspan", Colspan);
+                                    Y_Trs[j].appendChild(td);
+                                }
+                            }
+                        }
                     }
 
                 var Y_LastTds;
